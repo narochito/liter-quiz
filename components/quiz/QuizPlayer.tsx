@@ -68,6 +68,7 @@ export function QuizPlayer({
       <ResultScreen
         quiz={quiz}
         result={result}
+        answers={answers}
         products={products}
         onRestart={handleRestart}
       />

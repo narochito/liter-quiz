@@ -75,3 +75,12 @@ export type QuizComputedResult = {
 };
 
 export type QuizAnswersMap = Record<string, string>;
+
+export type QuizAnswerReviewItem = {
+  number: number;
+  questionId: string;
+  title: string;
+  selectedAnswerText: string;
+  correctAnswerText: string;
+  isCorrect: boolean;
+};

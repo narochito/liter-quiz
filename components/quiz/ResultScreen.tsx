@@ -1,15 +1,17 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { PromoBlock } from "@/components/quiz/PromoBlock";
-import { formatShareText } from "@/lib/quiz";
+import { ResultAnswersReview } from "@/components/quiz/ResultAnswersReview";
+import { buildAnswersReview, formatShareText } from "@/lib/quiz";
 import type { Product } from "@/types/product";
-import type { Quiz, QuizComputedResult } from "@/types/quiz";
+import type { Quiz, QuizAnswersMap, QuizComputedResult } from "@/types/quiz";
 
 type ResultScreenProps = {
   quiz: Quiz;
   result: QuizComputedResult;
+  answers: QuizAnswersMap;
   products: Product[];
   onRestart: () => void;
 };
@@ -17,10 +19,15 @@ type ResultScreenProps = {
 export function ResultScreen({
   quiz,
   result,
+  answers,
   products,
   onRestart,
 }: ResultScreenProps) {
   const [copied, setCopied] = useState(false);
+  const reviewItems = useMemo(
+    () => buildAnswersReview(quiz, answers),
+    [quiz, answers]
+  );
 
   const handleShare = useCallback(async () => {
     const text = formatShareText(quiz, result);
@@ -78,6 +85,8 @@ export function ResultScreen({
           )}
         </div>
       </div>
+
+      <ResultAnswersReview items={reviewItems} />
 
       <PromoBlock promo={quiz.promo} products={products} />
     </div>

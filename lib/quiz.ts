@@ -1,9 +1,34 @@
 import type {
   Quiz,
+  QuizAnswerReviewItem,
   QuizAnswersMap,
   QuizComputedResult,
   QuizQuestion,
 } from "@/types/quiz";
+
+function getAnswerText(question: QuizQuestion, answerId: string): string {
+  return (
+    question.answers.find((answer) => answer.id === answerId)?.text ?? "—"
+  );
+}
+
+export function buildAnswersReview(
+  quiz: Quiz,
+  selectedAnswers: QuizAnswersMap
+): QuizAnswerReviewItem[] {
+  return quiz.questions.map((question, index) => {
+    const selectedAnswerId = selectedAnswers[question.id] ?? "";
+
+    return {
+      number: index + 1,
+      questionId: question.id,
+      title: question.title,
+      selectedAnswerText: getAnswerText(question, selectedAnswerId),
+      correctAnswerText: getAnswerText(question, question.correctAnswerId),
+      isCorrect: selectedAnswerId === question.correctAnswerId,
+    };
+  });
+}
 
 export function calculateScore(
   quiz: Quiz,
