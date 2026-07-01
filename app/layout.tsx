@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Literata } from "next/font/google";
+import { SiteHeader } from "@/components/layout/SiteHeader";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,17 +9,20 @@ const inter = Inter({
   display: "swap",
 });
 
+const literata = Literata({
+  variable: "--font-literata",
+  subsets: ["latin", "cyrillic"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Угадайте, сколько денег было у русских классиков?",
-  description:
-    "7 вопросов о современных эквивалентах доходов и состояний великих русских писателей.",
-  openGraph: {
-    title: "Угадайте, сколько денег было у русских классиков?",
-    description:
-      "7 вопросов о современных эквивалентах доходов и состояний великих русских писателей.",
-    locale: "ru_RU",
-    type: "website",
+  metadataBase: new URL("https://narochito.ru"),
+  title: {
+    default: "Narochito Quiz",
+    template: "%s | Narochito",
   },
+  description:
+    "Литературные квизы от Narochito — футболки с цитатами русских классиков.",
 };
 
 export default function RootLayout({
@@ -27,9 +31,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full bg-[#fafafa] font-sans text-neutral-900">
-        {children}
+    <html
+      lang="ru"
+      className={`${inter.variable} ${literata.variable} h-full antialiased`}
+    >
+      <body className="min-h-full bg-paper text-ink">
+        <SiteHeader />
+        <main>{children}</main>
       </body>
     </html>
   );

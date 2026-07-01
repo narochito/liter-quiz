@@ -1,35 +1,70 @@
-import { TOTAL_QUESTIONS } from "@/data/questions";
-import type { QuizQuestion, QuizResult } from "@/types/quiz";
+import type {
+  Quiz,
+  QuizAnswersMap,
+  QuizComputedResult,
+  QuizQuestion,
+} from "@/types/quiz";
 
 export function calculateScore(
-  questions: QuizQuestion[],
-  selectedAnswers: Record<string, string>
-): QuizResult {
-  const score = questions.reduce((acc, question) => {
+  quiz: Quiz,
+  selectedAnswers: QuizAnswersMap
+): QuizComputedResult {
+  const score = quiz.questions.reduce((acc, question) => {
     return selectedAnswers[question.id] === question.correctAnswerId
       ? acc + 1
       : acc;
   }, 0);
 
-  const total = TOTAL_QUESTIONS;
+  const total = quiz.questions.length;
   const percentage = Math.round((score / total) * 100);
+  const tier = getResultTier(quiz, score);
 
   return {
     score,
     total,
     percentage,
-    message: getScoreMessage(score),
+    title: tier.title,
+    message: tier.message,
   };
 }
 
-export function getScoreMessage(score: number): string {
-  if (score <= 2) {
-    return "Похоже, финансовая история русской литературы прошла мимо вас 🙂";
+export function getResultTier(quiz: Quiz, score: number) {
+  const tier = quiz.resultTiers.find(
+    (item) => score >= item.minScore && score <= item.maxScore
+  );
+
+  if (!tier) {
+    return quiz.resultTiers[quiz.resultTiers.length - 1];
   }
 
-  if (score <= 5) {
-    return "Неплохо! Но русские классики ещё умеют удивлять.";
+  return tier;
+}
+
+export function isAnswerCorrect(
+  question: QuizQuestion,
+  answerId: string
+): boolean {
+  return question.correctAnswerId === answerId;
+}
+
+export function formatShareText(quiz: Quiz, result: QuizComputedResult): string {
+  return [
+    `${quiz.title}`,
+    `Мой результат: ${result.score} из ${result.total} (${result.percentage}%) — ${result.title}`,
+    "",
+    "Пройти квиз:",
+    `https://narochito.ru/quiz/${quiz.slug}`,
+  ].join("\n");
+}
+
+export function formatPrice(price: number, currency = "RUB"): string {
+  if (currency === "RUB") {
+    return new Intl.NumberFormat("ru-RU", {
+      style: "currency",
+      currency: "RUB",
+      maximumFractionDigits: 0,
+    }).format(price);
   }
 
-  return "Отличный результат! Вы хорошо ориентируетесь в мире русской литературы.";
+  return `${price} ${currency}`;
 }

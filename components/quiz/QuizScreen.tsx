@@ -1,73 +1,68 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { AnswerButton } from "@/components/quiz/AnswerButton";
+import { useEffect, useState } from "react";
 import { ProgressBar } from "@/components/quiz/ProgressBar";
-import type { QuizQuestion } from "@/types/quiz";
-
-const AUTO_ADVANCE_DELAY_MS = 650;
+import { QuestionCard } from "@/components/quiz/QuestionCard";
+import { QuizNavigation } from "@/components/quiz/QuizNavigation";
+import type { Quiz, QuizAnswersMap } from "@/types/quiz";
 
 type QuizScreenProps = {
-  questions: QuizQuestion[];
+  quiz: Quiz;
   currentIndex: number;
+  answers: QuizAnswersMap;
   onAnswer: (questionId: string, answerId: string) => void;
+  onBack: () => void;
+  onContinue: () => void;
+  onRestart: () => void;
 };
 
 export function QuizScreen({
-  questions,
+  quiz,
   currentIndex,
+  answers,
   onAnswer,
+  onBack,
+  onContinue,
+  onRestart,
 }: QuizScreenProps) {
-  const question = questions[currentIndex];
+  const question = quiz.questions[currentIndex];
+  const savedAnswer = answers[question.id] ?? null;
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(
-    null
+    savedAnswer
   );
-  const [isLocked, setIsLocked] = useState(false);
 
   useEffect(() => {
-    setSelectedAnswerId(null);
-    setIsLocked(false);
-  }, [currentIndex]);
+    setSelectedAnswerId(savedAnswer);
+  }, [question.id, savedAnswer]);
 
-  const handleSelect = useCallback(
-    (answerId: string) => {
-      if (isLocked) return;
+  const handleSelect = (answerId: string) => {
+    setSelectedAnswerId(answerId);
+    onAnswer(question.id, answerId);
+  };
 
-      setSelectedAnswerId(answerId);
-      setIsLocked(true);
-
-      window.setTimeout(() => {
-        onAnswer(question.id, answerId);
-      }, AUTO_ADVANCE_DELAY_MS);
-    },
-    [isLocked, onAnswer, question.id]
-  );
+  const isLastQuestion = currentIndex === quiz.questions.length - 1;
 
   return (
-    <div className="flex min-h-[100dvh] flex-col px-6 py-8 sm:px-8 sm:py-12">
-      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
-        <ProgressBar current={currentIndex + 1} total={questions.length} />
+    <div className="mx-auto flex min-h-[calc(100dvh-3.5rem)] w-full max-w-3xl flex-col px-5 py-8 sm:px-8 sm:py-12">
+      <ProgressBar current={currentIndex + 1} total={quiz.questions.length} />
 
-        <div
-          key={question.id}
-          className="animate-fade-in-up mt-10 flex flex-1 flex-col sm:mt-14"
-        >
-          <h2 className="text-balance text-2xl font-semibold leading-snug tracking-tight text-neutral-900 sm:text-3xl md:text-4xl">
-            {question.question}
-          </h2>
+      <div key={question.id} className="mt-8 flex flex-1 flex-col sm:mt-10">
+        <QuestionCard
+          question={question}
+          selectedAnswerId={selectedAnswerId}
+          isLocked={false}
+          onSelect={handleSelect}
+        />
 
-          <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:gap-4">
-            {question.answers.map((answer, index) => (
-              <AnswerButton
-                key={answer.id}
-                text={answer.text}
-                index={index}
-                selected={selectedAnswerId === answer.id}
-                disabled={isLocked}
-                onClick={() => handleSelect(answer.id)}
-              />
-            ))}
-          </div>
+        <div className="mt-auto pt-10">
+          <QuizNavigation
+            canGoBack={currentIndex > 0}
+            canContinue={Boolean(selectedAnswerId)}
+            isLastQuestion={isLastQuestion}
+            onBack={onBack}
+            onContinue={onContinue}
+            onRestart={onRestart}
+          />
         </div>
       </div>
     </div>
