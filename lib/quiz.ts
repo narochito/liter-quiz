@@ -26,6 +26,8 @@ export function buildAnswersReview(
       selectedAnswerText: getAnswerText(question, selectedAnswerId),
       correctAnswerText: getAnswerText(question, question.correctAnswerId),
       isCorrect: selectedAnswerId === question.correctAnswerId,
+      explanation: question.explanation,
+      source: question.source,
     };
   });
 }

@@ -84,6 +84,20 @@ export function ResultAnswersReview({ items }: ResultAnswersReviewProps) {
                     </p>
                   </div>
                 )}
+
+                <div>
+                  <p className="text-xs text-ink-faint">Объяснение</p>
+                  <p className="mt-0.5 leading-relaxed text-ink-muted">
+                    {item.explanation}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-ink-faint">Источник</p>
+                  <p className="mt-0.5 leading-relaxed text-ink-faint">
+                    {item.source}
+                  </p>
+                </div>
               </div>
             </div>
           </li>

@@ -20,6 +20,8 @@ export type QuizQuestion = {
   image?: QuizImage;
   answers: QuizAnswer[];
   correctAnswerId: string;
+  explanation: string;
+  source: string;
 };
 
 export type QuizResultTier = {
@@ -83,4 +85,6 @@ export type QuizAnswerReviewItem = {
   selectedAnswerText: string;
   correctAnswerText: string;
   isCorrect: boolean;
+  explanation: string;
+  source: string;
 };
