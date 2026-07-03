@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Literata } from "next/font/google";
+import { YandexMetrika } from "@/components/analytics/YandexMetrika";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import "./globals.css";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
       <body className="min-h-full bg-paper text-ink">
         <SiteHeader />
         <main>{children}</main>
+        <YandexMetrika />
       </body>
     </html>
   );
